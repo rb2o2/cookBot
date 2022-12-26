@@ -2,3 +2,8 @@
 .idea
 target/
 src/data
+/project/plugins.sbt
+token
+*.csv
+*.exe
+todo.md

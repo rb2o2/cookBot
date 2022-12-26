@@ -21,7 +21,7 @@ case class Recipe(url: String,
     sb.append("), ")
     sb.append(meals)
     sb.append(" порций\n===========\n")
-    ingredients.foreach { case Ingredient(m, a) => 
+    ingredients.foreach { case Ingredient(m, a) =>
       sb.append(m)
       sb.append(" -- ")
       sb.append(a)
@@ -30,7 +30,7 @@ case class Recipe(url: String,
     sb.append("===== ")
     sb.append(cookTime)
     sb.append(" =====\n")
-    steps.zipWithIndex.foreach { case (instr, i) => 
+    steps.zipWithIndex.foreach { case (instr, i) =>
       sb.append(i + 1)
       sb.append(". ")
       sb.append(instr)
@@ -42,7 +42,13 @@ end Recipe
 
 object Recipe :
   def apply(line: String): Recipe = {
-    val tokens: Array[String] = line.replace(" ", " ").split("\\$")
+    val tokens: Array[String] = line
+      .replace(" ", " ")
+      .replace("½", "1/2")
+      .replace("«", "'")
+      .replace("»", "'")
+      .replace("®", "")
+      .split("\\$")
     val url_ = tokens(0)
     val category_ = tokens(1)
     val mealName_ = tokens(2)
@@ -60,7 +66,7 @@ object Recipe :
     val steps_ : ListBuffer[String] = ListBuffer()
     var i: Int = 7
     while (i < tokens.length && !tokens(i).isBlank) {
-      steps_.+=(tokens(i))
+      steps_.+=(tokens(i).stripPrefix(";").stripSuffix(";"))
       i+=1
     }
     new Recipe(url_, mealName_, category_, cuisine_, meals_, cookTime_, ingredients_.toList, steps_.toList)
@@ -70,9 +76,9 @@ end Recipe
 
 
 case class Ingredient(name: String, amount: String)
-class IngredientName(name: String) {
-  def this(i: Ingredient) = this(i.name)
-}
-class IngredientType(name: String) {
-  
+
+case class IngredientName(name: String)
+
+case object IngredientName {
+  def apply(i: Ingredient): IngredientName = IngredientName(i.name)
 }

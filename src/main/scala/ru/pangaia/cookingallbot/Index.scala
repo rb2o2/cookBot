@@ -1,17 +1,19 @@
 package ru.pangaia
 package cookingallbot
 
-import scala.io.Source
+import cookingallbot.Util.intersects
+
+import scala.io.{Codec, Source}
 
 class Index(file: String) {
   val data: List[Recipe] = {
-    val src = Source.fromFile(file)
-    src.getLines().map(Recipe(_)).toList    
+    val src = Source.fromResource(file)(Codec.UTF8)
+    src.getLines().map(Recipe(_)).toList
   }
-  def collectIgredientTypes: List[IngredientName] = {
+  def collectIngredientTypes: List[IngredientName] = {
     data.foldRight(Set.empty)(
       (r: Recipe, acc: Set[IngredientName]) =>
-        acc ++ r.ingredients.map(new IngredientName(_))).toList
+        acc ++ r.ingredients.map(IngredientName(_))).toList
   }
 
   def searchExhaustive(keywords: List[Set[String]]): List[Recipe] = {
@@ -27,11 +29,9 @@ class Index(file: String) {
         r.ingredients.map(_.name.split(" +").map(_.toLowerCase).toSet)))
   }
 
-  def searchOneKeywordInAny(keyword: Set[String]): List[Recipe] = {
+  def searchOneKeywordInAny(tokens: Set[String]): List[Recipe] = {
     data.filter((r: Recipe) =>
-      r.ingredients
-        .map(_.name.split(" +")
-          .map(_.toLowerCase).toSet)
-        .contains(keyword.map(_.toLowerCase)))
+      r.ingredients.exists((i: Ingredient) => intersects(
+        Util.tokenSet(i.name), tokens)))
   }
 }
