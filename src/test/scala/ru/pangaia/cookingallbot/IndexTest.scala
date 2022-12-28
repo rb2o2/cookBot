@@ -4,7 +4,7 @@ package cookingallbot
 import org.scalatest.flatspec.AnyFlatSpec
 
 class IndexTest extends AnyFlatSpec {
-  val index  = new Index("src/data/test_small.csv")
+  val index  = new Index("test_small.csv", false)
   //
   //CONSTANTS
   //
