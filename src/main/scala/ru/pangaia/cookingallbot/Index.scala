@@ -5,10 +5,13 @@ import cookingallbot.Util.intersects
 
 import scala.io.{Codec, Source}
 
-class Index(file: String) {
+class Index(file: String, fromZip: Boolean) {
   val data: List[Recipe] = {
-    val src = Source.fromResource(file)(Codec.UTF8)
-    src.getLines().map(Recipe(_)).toList
+    if !fromZip then
+      val src = Source.fromResource(file)(Codec.UTF8)
+      src.getLines().map(Recipe(_)).toList
+    else
+      Util.uncompress(file)
   }
   def collectIngredientTypes: List[IngredientName] = {
     data.foldRight(Set.empty)(

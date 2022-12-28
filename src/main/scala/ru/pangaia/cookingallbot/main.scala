@@ -10,7 +10,7 @@ import scala.util.Random
 def main(profile: String*): Unit = {
   val cp = Util.parseCodepage(profile)
   println("Hello world!")
-  val index = new Index("data.csv")
+  val index = new Index("data.zip", true)
   val ingredientIndex = index.collectIngredientTypes
 
   //------
