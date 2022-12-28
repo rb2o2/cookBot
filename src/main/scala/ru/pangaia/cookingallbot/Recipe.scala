@@ -45,9 +45,13 @@ object Recipe :
     val tokens: Array[String] = line
       .replace(" ", " ")
       .replace("½", "1/2")
+      .replace("¼", "1/4")
+      .replace("¾", "3/4")
       .replace("«", "'")
       .replace("»", "'")
       .replace("®", "")
+      .replace("–","-")
+      .replace("—","-")
       .split("\\$")
     val url_ = tokens(0)
     val category_ = tokens(1)
