@@ -129,7 +129,7 @@ class RecipeTest extends AnyFlatSpec {
         Ingredient("Вода", "по вкусу")),
       List("Сварить", "Посолить"))
     val list: List[Recipe] = List[Recipe](rec1, rec2, rec3, rec4, rec5)
-    val result = new Random(rndSeed).shuffle(list).sorted(Recipe.compexityOrdering)
+    val result = new Random(rndSeed).shuffle(list).sorted(Recipe.complexityOrdering)
     assert(result(0) === rec4)
     assert(result(1) === rec5)
     assert(result(2) === rec1)

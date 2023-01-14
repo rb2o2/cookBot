@@ -9,7 +9,7 @@ class DBIntegrityTest extends AnyFlatSpec {
     try {
       println(fullIndex.data.sorted(Recipe.timeOrdering.reverse)(1))
     } catch {
-      case x: Exception => fail()
+      case _: Exception => fail()
     }
   }
 

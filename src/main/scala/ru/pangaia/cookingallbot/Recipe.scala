@@ -85,7 +85,7 @@ object Recipe :
 
   def contentsOrdering: Ordering[Recipe] = Ordering.by((r: Recipe) => r.ingredients.size)
 
-  def compexityOrdering: Ordering[Recipe] = Ordering.by((r: Recipe) => r.steps.size)
+  def complexityOrdering: Ordering[Recipe] = Ordering.by((r: Recipe) => r.steps.size)
 end Recipe
 
 

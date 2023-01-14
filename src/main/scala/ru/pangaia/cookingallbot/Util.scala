@@ -47,7 +47,6 @@ object Util {
   }
 
   def uncompress(zipFile: String): List[Recipe] =
-    val buffer = new Array[Byte](4096)
     val datafileIS = new ZipInputStream(getClass
       .getClassLoader
       .getResourceAsStream(zipFile))
