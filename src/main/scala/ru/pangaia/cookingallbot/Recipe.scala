@@ -76,6 +76,16 @@ object Recipe :
     new Recipe(url_, mealName_, category_, cuisine_, meals_, cookTime_, ingredients_.toList, steps_.toList)
   }
 
+  def timeOrdering: Ordering[Recipe] = Ordering.by((r: Recipe) =>
+    val ct = r.cookTime.split(" +")
+    if ct.size <= 2 then
+      if ct(1).startsWith("ч") then Integer.parseInt(ct(0))*60 else Integer.parseInt(ct(0))
+    else Integer.parseInt(ct(0))*60 + Integer.parseInt(ct(2))
+  )
+
+  def contentsOrdering: Ordering[Recipe] = Ordering.by((r: Recipe) => r.ingredients.size)
+
+  def compexityOrdering: Ordering[Recipe] = Ordering.by((r: Recipe) => r.steps.size)
 end Recipe
 
 
