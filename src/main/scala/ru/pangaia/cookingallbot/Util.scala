@@ -31,7 +31,7 @@ object Util {
 
   def recode(string: String, cp: String): String = {
     if cp != "UTF-8" then
-      val inputBytes = string.getBytes("UTF-8")
+      val inputBytes = string.getBytes(cp)
       new String(inputBytes, cp)
     else string
   }

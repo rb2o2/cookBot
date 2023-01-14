@@ -3,10 +3,14 @@ package cookingallbot
 
 import cookingallbot.UI.{greeting, prompt}
 
+import java.nio.charset.Charset
+import java.util.Scanner
 import scala.annotation.tailrec
 import scala.util.Random
 
 class UI(index: Index, ingredientIndex: List[IngredientName], cp: String) {
+  private val scanner = new Scanner(System.in, Charset.forName(cp))
+
   def loop(): Unit = {
     print(greeting(index.data.size, ingredientIndex.size))
     print(index.data(Random.nextInt(index.data.size - 1)))
@@ -16,7 +20,7 @@ class UI(index: Index, ingredientIndex: List[IngredientName], cp: String) {
   @tailrec
   private def innerLoop(): Unit = {
     print(prompt)
-    val query = System.console().readLine()
+    val query = scanner.nextLine()
     if query.nonEmpty && !query.toLowerCase.split(" +")(0).equals("3") then
       query.toLowerCase.split(" +")(0) match {
         case "1" =>
@@ -38,7 +42,7 @@ class UI(index: Index, ingredientIndex: List[IngredientName], cp: String) {
     print("Введите названия ингредиентов через запятую. " +
       "Я попробую найти рецепты блюд, которые можно приготовить из них. " +
       "Другие продукты не понадобятся.\n")
-    val searchString = System.console().readLine()
+    val searchString = scanner.nextLine()
     val ingredients = searchString.split(" *, *").toList
     val searchResult = index.searchExhaustive(ingredients.map(Util.tokenSet))
     if searchResult.nonEmpty then {
@@ -50,7 +54,7 @@ class UI(index: Index, ingredientIndex: List[IngredientName], cp: String) {
 
   private def singleIngredientSearch(): Unit = {
     print("Введите названия ингредиента, я отыщу все рецепты, куда он входит.\n")
-    val searchString = System.console().readLine()
+    val searchString = scanner.nextLine()
     val searchResult = index.searchOneKeywordInAny(Util.tokenSet(searchString))
     if searchResult.nonEmpty then {
       println(s"Найдено ${searchResult.size} рецептов")
@@ -65,7 +69,7 @@ class UI(index: Index, ingredientIndex: List[IngredientName], cp: String) {
         print(recipe)
       if ((i+1)*3) <= max then {
         print("Загрузить еще (д/Н)?\n")
-        System.console().readLine.toLowerCase.startsWith("д")
+        scanner.nextLine().toLowerCase.startsWith("д")
       } else false
     }
     val shuffled = Random.shuffle(searchResult)
