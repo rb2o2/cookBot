@@ -9,10 +9,10 @@ import scala.io.Source
 
 object Util {
   def readToken(filename: String): String = {
-    val src = Source.fromFile(filename)
-    val token = src.getLines().next()
-    src.close()
-    token
+    val is = this.getClass.getClassLoader.getResourceAsStream(filename)
+    val tok = new BufferedReader(new InputStreamReader(is)).readLine
+    is.close()
+    tok
   }
 
   def tokenSet(str: String): Set[String] = {
