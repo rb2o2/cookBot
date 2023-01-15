@@ -11,5 +11,5 @@ lazy val root = (project in file("."))
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.15" % "test"
-//  ,"com.github.pengrad" % "java-telegram-bot-api" % "6.3.0"
+  ,"com.github.pengrad" % "java-telegram-bot-api" % "6.3.0"
 )

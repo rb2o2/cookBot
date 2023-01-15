@@ -1,12 +1,86 @@
 package ru.pangaia
 package cookingallbot
 
-// import com.pengrad.telegrambot.{TelegramBot, UpdatesListener}
+import com.pengrad.telegrambot.model.*
+import com.pengrad.telegrambot.model.request.ParseMode
+import com.pengrad.telegrambot.request.*
+import com.pengrad.telegrambot.response.*
+import com.pengrad.telegrambot.{TelegramBot, UpdatesListener}
 
-class CookingBot(token: String) //extends TelegramBot(token) 
-{
-  // setUpdatesListener(updates => {
+import scala.collection.mutable
+import scala.util.Random
 
-  //   UpdatesListener.CONFIRMED_UPDATES_ALL
-  // })
+class CookingBot(token: String, i: Index) extends TelegramBot(token) {
+  private val START = "/start"
+  private val INGRED = "/ingred"
+  private val SEARCH_ALL = "/all"
+  setUpdatesListener(updates => {
+    for {upd <- updates}
+      processSingle(upd)
+    UpdatesListener.CONFIRMED_UPDATES_ALL
+  })
+
+  private def processSingle(u: Update): Unit = {
+    val msg = u.message()
+    if msg != null then
+      val chatId = msg.chat().id()
+      val text = msg.text()
+      if text.startsWith(START) then
+        displayMenu(chatId)
+      else if text.startsWith(INGRED) then
+        searchIngred(text, chatId)
+      else if text.startsWith(SEARCH_ALL) then
+        searchExhaustive(text, chatId)
+      else
+        sendIncorrectCommand(text, chatId)
+        displayMenu(chatId)
+  }
+
+  private def displayMenu(chatId: Int): Unit = {
+    stateMap(chatId) = ChatState.Started
+    val menuText =
+      """
+        |`/ingred <ингредиент>`
+        |для поиска рецептов
+        |с конкретным ингредиентом
+        |
+        |`/all <ингредиент1, ингредиент2, ...>`
+        |для поиска рецептов,
+        |которые можно приготовить
+        |из введенных ингредиентов
+        |""".stripMargin
+    val req: SendMessage = new SendMessage(chatId, menuText)
+    req.parseMode(ParseMode.MarkdownV2)
+    val response = execute(req)
+  }
+
+  private def searchIngred(text: String, chatId: Int): Unit = {
+    val query = text.stripPrefix(INGRED).trim
+    val tokenSet = Util.tokenSet(query)
+    val result = i.searchOneKeywordInAny(tokenSet)
+    val resultShuffled = Random.shuffle(result)
+
+    for {r <- resultShuffled.take(5)}
+      val req = new SendMessage(chatId, r.toMarkdown)
+      req.parseMode(ParseMode.MarkdownV2)
+      val res = execute(req)
+  }
+
+  private def searchExhaustive(text: String, chatId: Int): Unit = {
+    val query = text.stripPrefix(SEARCH_ALL).trim
+    val ingredients = query.split(" *, *").toList
+    val result = i.searchExhaustive(ingredients.map(Util.tokenSet))
+    val resultShuffled = Random.shuffle(result)
+
+    for {r <- resultShuffled.take(5)}
+      val req = new SendMessage(chatId, r.toMarkdown)
+      req.parseMode(ParseMode.MarkdownV2)
+      val res = execute(req)
+  }
+
+  private def sendIncorrectCommand(text: String, chatId: Int): Unit = {
+    val errorText = "неизвестная команда:\n" + text + "\n"
+    val req = new SendMessage(chatId, errorText)
+    val response = execute(req)
+  }
 }
