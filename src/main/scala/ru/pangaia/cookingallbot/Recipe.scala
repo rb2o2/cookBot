@@ -40,19 +40,13 @@ case class Recipe(url: String,
   }
 
   def toMarkdown: String = {
-    val sb = new StringBuilder("**" + mealName + "**\n")
+    val sb = new StringBuilder("*" + mealName + "*\n")
     sb.append(category + " (" + cuisine + ")\n")
     sb.append("порций: " + meals + "\n")
     ingredients.foreach { case Ingredient(m, a) =>
-      sb.append(m + " -- " + "*" + a + "*\n")
+      sb.append(m + " : " + "_" + a + "_\n")
     }
-    sb.append("--- " + cookTime + " ---")
-    steps.zipWithIndex.foreach { case (instr, i) =>
-      sb.append(i + 1)
-      sb.append(". ")
-      sb.append(instr)
-      sb.append("\n")
-    }
+    sb.append("*" + cookTime + "*")
     sb.toString
   }
 end Recipe
