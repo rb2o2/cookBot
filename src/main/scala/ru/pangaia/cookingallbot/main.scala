@@ -2,7 +2,7 @@ package ru.pangaia.cookingallbot
 
 
 import com.pengrad.telegrambot.TelegramBot
-import Util.*
+import ru.pangaia.cookingallbot.Util.*
 
 import scala.util.Random
 
@@ -12,10 +12,11 @@ def main(profile: String*): Unit = {
   println("Hello world!")
   val index = new Index("data.zip", true)
   val ingredientIndex = index.collectIngredientTypes
+  println(s"В базе ${index.data.size} рецептов из ${ingredientIndex.size} ингредиентов")
 
   val token = readToken("token")
   val bot = new CookingBot(token, index)
-  new CookingBot(token, index)
+  println("press Enter to stop")
 
 //  val ui = new UI(index, ingredientIndex, cp)
 //  ui.loop()
