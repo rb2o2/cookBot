@@ -8,9 +8,8 @@ import com.pengrad.telegrambot.response.*
 import com.pengrad.telegrambot.{TelegramBot, UpdatesListener}
 
 import scala.collection.mutable
-import scala.util.Random
-
 import scala.jdk.CollectionConverters.*
+import scala.util.Random
 
 class CookingBot(token: String, i: Index) {
   private val START = "/start"
@@ -63,24 +62,48 @@ class CookingBot(token: String, i: Index) {
     val query = text.stripPrefix(INGRED).trim
     val tokenSet = Util.tokenSet(query)
     val result = i.searchOneKeywordInAny(tokenSet)
-    val resultShuffled = Random.shuffle(result)
-
-    for {r <- resultShuffled.take(5)}
-      val req = new SendMessage(chatId, r.toMarkdown)
-      req.parseMode(ParseMode.MarkdownV2)
+    println(s"id: $chatId: ${result.size} recipes for '$query'")
+    if result.isEmpty then
+      val req = SendMessage(chatId, "Ингредиент не найден ни в одном из рецептов")
       val res = bot.execute(req)
+    val resultShuffled = Random.shuffle(result)
+    for {r: Recipe <- resultShuffled.take(5)} {
+      val req: SendMessage = new SendMessage(chatId, r.toMarkdown)
+      req.parseMode(ParseMode.Markdown)
+      val res = bot.execute(req)
+      if !res.isOk then
+        println(res.errorCode())
+      for {s <- r.steps.zipWithIndex} {
+        val req: SendMessage = new SendMessage(chatId, s"${s._2 + 1}. ${s._1}\n")
+        val res = bot.execute(req)
+        if !res.isOk then
+          println(res.errorCode())
+      }
+    }
   }
 
   private def searchExhaustive(text: String, chatId: Long): Unit = {
     val query = text.stripPrefix(SEARCH_ALL).trim
     val ingredients = query.split(" *, *").toList
     val result = i.searchExhaustive(ingredients.map(Util.tokenSet))
-    val resultShuffled = Random.shuffle(result)
-
-    for {r <- resultShuffled.take(5)}
-      val req = new SendMessage(chatId, r.toMarkdown)
-      req.parseMode(ParseMode.MarkdownV2)
+    println(s"id: $chatId: ${result.size} recipes for '$query'")
+    if result.isEmpty then
+      val req = SendMessage(chatId, "Ничего не найдено, попробуйте расширить список ингредиентов")
       val res = bot.execute(req)
+    val resultShuffled = Random.shuffle(result)
+    for {r: Recipe <- resultShuffled.take(5)} {
+      val req: SendMessage = new SendMessage(chatId, r.toMarkdown)
+      req.parseMode(ParseMode.Markdown)
+      val res = bot.execute(req)
+      if !res.isOk then
+        println(res.errorCode())
+      for {s <- r.steps.zipWithIndex} {
+        val req: SendMessage = new SendMessage(chatId, s"${s._2+1}. ${s._1}\n")
+        val res = bot.execute(req)
+        if !res.isOk then
+          println(res.errorCode())
+      }
+    }
   }
 
   private def sendIncorrectCommand(text: String, chatId: Long): Unit = {
