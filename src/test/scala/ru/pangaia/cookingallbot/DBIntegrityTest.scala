@@ -20,4 +20,8 @@ class DBIntegrityTest extends AnyFlatSpec {
   "all recipes" should "have nonempty instruction list" in {
     assert(!fullIndex.data.exists(_.steps.isEmpty))
   }
+
+  "all recipes" should "have .toMarkdown less than 4096 chars long" in {
+    assert(!fullIndex.data.exists(_.toMarkdown.length > 4096))
+  }
 }
