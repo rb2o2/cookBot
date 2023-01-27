@@ -34,7 +34,12 @@ class Index(file: String, fromZip: Boolean) {
 
   def searchOneKeywordInAny(tokens: Set[String]): List[Recipe] = {
     data.filter((r: Recipe) =>
-      r.ingredients.exists((i: Ingredient) => intersects(
-        Util.tokenSet(i.name), tokens)))
+      r.ingredients.exists((i: Ingredient) =>
+        intersects(Util.tokenSet(i.name), tokens)))
+  }
+
+  def searchKeywordsListInAny(tokens: List[Set[String]]): List[Recipe] = {
+    data.filter((r: Recipe) => tokens.forall((tk: Set[String]) =>
+      r.ingredients.map((i: Ingredient) => Util.tokenSet(i.name)).exists(intersects(tk, _))))
   }
 }

@@ -81,11 +81,11 @@ class CookingBot(token: String, i: Index) {
 
   private def searchIngred(text: String, chatId: Long): Unit = {
     val query = text.stripPrefix(INGRED).trim
-    val tokenSet = Util.tokenSet(query)
-    val result = i.searchOneKeywordInAny(tokenSet)
+    val tokenSet = query.split(" *, *").map(Util.tokenSet).toList
+    val result = i.searchKeywordsListInAny(tokenSet)
     println(s"id: $chatId: ${result.size} recipes for '$query'")
     if result.isEmpty then
-      val req = SendMessage(chatId, "Ингредиент не найден ни в одном из рецептов")
+      val req = SendMessage(chatId, "Сочетание ингредиентов не найдено ни в одном из рецептов")
       val res = bot.execute(req)
     val resultShuffled = Random.shuffle(result)
     for {r: Recipe <- resultShuffled.take(5)} {

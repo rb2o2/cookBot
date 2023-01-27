@@ -34,6 +34,7 @@ class IndexTest extends AnyFlatSpec {
   val keyword2 = "Куриное яйцо"
   val recipesInDataset2 = 7//+1 fillet
   val keyword2Short = "Яйцо"
+  val keyWord2ShortInDataset = 6
 
 
   def partitionKeywords(kwlist: List[String]): List[Set[String]] =
@@ -57,7 +58,18 @@ class IndexTest extends AnyFlatSpec {
     ).size === recipesInDataset2)
   }
   "searchOneKeywordInAny" should "match short keywords too" in {
-    assert(index.searchOneKeywordInAny(Util.tokenSet(keyword2Short)).size === 6)
+    assert(index.searchOneKeywordInAny(Util.tokenSet(keyword2Short)).size === keyWord2ShortInDataset)
   }
-
+  "searchKeywordsListInAny" should "return all recipes with all ingreds mentioned" in {
+    val keys = partitionKeywords(List("Куриное яйцо", "Сахар"))
+    assert(keys.contains(Set("куриное","яйцо")))
+    assert(keys.contains(Set("сахар")))
+    val recipesInDataset3 = 4
+    assert(index.searchKeywordsListInAny(keys).size === recipesInDataset3)
+  }
+  "searchKeywordsListInAny" should "behave same as searchOneKywordInAny in case of a single keyword" in {
+    val key = keyword2Short
+    assert(index.searchOneKeywordInAny(Util.tokenSet(key)).size ===
+      index.searchKeywordsListInAny(List(Util.tokenSet(key))).size)
+  }
 }
