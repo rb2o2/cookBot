@@ -13,8 +13,11 @@ import scala.util.Random
 
 class CookingBot(token: String, i: Index) {
   private val START = "/start"
+  private val START2 = "/старт"
   private val INGRED = "/ingred"
+  private val INGRED2 = "/рецепт"
   private val SEARCH_ALL = "/all"
+  private val SEARCH_ALL2 = "/всеиз"
   private val bot = new TelegramBot.Builder(token).updateListenerSleep(15000).build()
 
 
@@ -29,11 +32,11 @@ class CookingBot(token: String, i: Index) {
     if msg != null then {
       val chatId = msg.chat().id()
       val text = msg.text()
-      if text.startsWith(START) then
+      if text.startsWith(START) || text.startsWith(START2) then
         displayMenu(chatId)
-      else if text.startsWith(INGRED) then
+      else if text.startsWith(INGRED) || text.startsWith(INGRED2) then
         searchIngred(text, chatId)
-      else if text.startsWith(SEARCH_ALL) then
+      else if text.startsWith(SEARCH_ALL) || text.startsWith(SEARCH_ALL2) then
         searchExhaustive(text, chatId)
       else
         sendIncorrectCommand(text, chatId)
@@ -44,17 +47,35 @@ class CookingBot(token: String, i: Index) {
   private def displayMenu(chatId: Long): Unit = {
     val menuText =
       """
-        |`/ingred <ингредиент>`
-        |для поиска рецептов
-        |с конкретным ингредиентом
+        |CookingBot версия 0.2-α
         |
-        |`/all <ингредиент1, ингредиент2, ...>`
+        |Я ищу для вас кулинарные рецепты по составу.
+        |Команды:
+        |
+        |`/старт` или `/start`
+        |выводит это справочное сообщение.
+        |
+        |
+        |`/рецепт` ингредиент1, ингредиент2, ...
+        |или
+        |`/ingred` ингредиент1, ингредиент2, ...
+        |для поиска рецептов
+        |с конкретными ингредиентами.
+        |Я найду *до 5* рецептов,
+        |в составе которых есть все эти ингредиенты.
+        |
+        |
+        |`/всеиз` ингредиент1, ингредиент2, ...
+        |или
+        |`/all` ингредиент1, ингредиент2, ...
         |для поиска рецептов,
         |которые можно приготовить
-        |из введенных ингредиентов
+        |из введенных ингредиентов.
+        |Я найду *до 5* рецептов, все игредиенты которых
+        |входят в приведенный список.
         |""".stripMargin
     val req: SendMessage = new SendMessage(chatId, menuText)
-    req.parseMode(ParseMode.MarkdownV2)
+    req.parseMode(ParseMode.Markdown)
     val response = bot.execute(req)
   }
 
