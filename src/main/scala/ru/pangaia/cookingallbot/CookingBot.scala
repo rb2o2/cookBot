@@ -160,7 +160,7 @@ class CookingBot(token: String, i: Index) {
     searchResults(chatId) = searchResults(chatId).drop(choices.size)
     userChoices(chatId) = choices.toMap
     val req: SendMessage = new SendMessage(chatId, messTextBuffer.toString)
-    val keyboard: ReplyKeyboardMarkup = if searchResults.nonEmpty then
+    val keyboard: ReplyKeyboardMarkup = if searchResults(chatId).nonEmpty then
       new ReplyKeyboardMarkup(
         Array(Array.from(buttons), Array("Еще")), false, true, true)
     else
