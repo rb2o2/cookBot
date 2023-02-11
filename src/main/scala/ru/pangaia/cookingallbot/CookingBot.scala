@@ -37,25 +37,29 @@ class CookingBot(token: String, i: Index) {
     if msg != null then {
       val chatId = msg.chat().id()
       val text = msg.text()
-      if text.startsWith(START) || text.startsWith(START2) then
-        displayMenu(chatId)
-      else if text.startsWith(INGRED) || text.startsWith(INGRED2) then
-        search(i.searchKeywordsListInAny,
-          text.replaceAll(INGRED+"|"+INGRED2, ""),
-          chatId,
-          NOT_FOUND_ANY)
-      else if text.startsWith(SEARCH_ALL) || text.startsWith(SEARCH_ALL2) then
-        search(i.searchExhaustive,
-          text.replaceAll(SEARCH_ALL+"|"+SEARCH_ALL2, ""),
-          chatId,
-          NOT_FOUND_ALL)
-      else if text.matches("\\d") then
-        chooseRecipe(text, chatId)
-      else if text.equalsIgnoreCase(MORE) || text.equalsIgnoreCase(MORE2) then
-        sendMore(chatId)
-      else
-        sendIncorrectCommand(text, chatId)
-        displayMenu(chatId)
+      try {
+        if text.startsWith(START) || text.startsWith(START2) then
+          displayMenu(chatId)
+        else if text.startsWith(INGRED) || text.startsWith(INGRED2) then
+          search(i.searchKeywordsListInAny,
+            text.replaceAll(INGRED + "|" + INGRED2, ""),
+            chatId,
+            NOT_FOUND_ANY)
+        else if text.startsWith(SEARCH_ALL) || text.startsWith(SEARCH_ALL2) then
+          search(i.searchExhaustive,
+            text.replaceAll(SEARCH_ALL + "|" + SEARCH_ALL2, ""),
+            chatId,
+            NOT_FOUND_ALL)
+        else if text.matches("\\d") then
+          chooseRecipe(text, chatId)
+        else if text.equalsIgnoreCase(MORE) || text.equalsIgnoreCase(MORE2) then
+          sendMore(chatId)
+        else
+          sendIncorrectCommand(text, chatId)
+          displayMenu(chatId)
+      } catch
+        case x: NoSuchElementException => ()
+
     }
   }
 
