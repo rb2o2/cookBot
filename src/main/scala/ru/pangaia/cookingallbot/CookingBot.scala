@@ -139,11 +139,12 @@ class CookingBot(token: String, i: Index) {
       req.parseMode(ParseMode.Markdown)
       searchResults(chatId) = searchResults(chatId).drop(userChoices(chatId).size)
       bot.execute(req)
-      val sb = new StringBuilder("")
-      for {(step, index) <- recipe.steps.zipWithIndex}
+      for {(step, index) <- recipe.steps.zipWithIndex} {
+        val sb = new StringBuilder("")
         sb.append("" + (index+1)).append(". ").append(step).append("\n")
         val stepReq = new SendMessage(chatId, sb.toString)
         bot.execute(stepReq)
+      }
   }
 
   private def sendMore(chatId: Long): Unit = {
