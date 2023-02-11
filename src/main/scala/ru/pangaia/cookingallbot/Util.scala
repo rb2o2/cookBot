@@ -19,6 +19,10 @@ object Util {
     str.split(" +").map(_.toLowerCase).toSet
   }
 
+  def superset(a: List[Set[String]], b: List[Set[String]]): Boolean = {
+    b.toSet.subsetOf(a.toSet)
+  }
+
   def intersects[A](setA: Set[A], setB: Set[A]): Boolean = {
     @tailrec
     def intersects(seqA: Seq[A], seqB: Seq[A]): Boolean = {

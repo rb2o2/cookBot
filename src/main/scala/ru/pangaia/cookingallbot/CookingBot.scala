@@ -16,12 +16,15 @@ class CookingBot(token: String, i: Index) {
   private val START2 = "/старт"
   private val INGRED = "/ingred"
   private val INGRED2 = "/рецепт"
+  private val RECIPE_NAME = "/name"
+  private val RECIPE_NAME2 = "/название"
   private val SEARCH_ALL = "/all"
   private val SEARCH_ALL2 = "/всеиз"
   private val MORE = "more"
   private val MORE2 = "еще"
   private val NOT_FOUND_ANY = "Сочетание ингредиентов не найдено ни в одном из рецептов"
   private val NOT_FOUND_ALL = "Ничего не найдено, попробуйте расширить список ингредиентов"
+  private val NOT_FOUND_NAME = "Рецепты с похожим названием не найдены"
   private val bot = new TelegramBot.Builder(token).updateListenerSleep(15000).build()
   private val searchResults: mutable.Map[Long, List[String]] = mutable.Map()
   private val userChoices: mutable.Map[Long, Map[Int, String]] = mutable.Map()
@@ -50,6 +53,11 @@ class CookingBot(token: String, i: Index) {
             text.replaceAll(SEARCH_ALL + "|" + SEARCH_ALL2, ""),
             chatId,
             NOT_FOUND_ALL)
+        else if text.startsWith(RECIPE_NAME) || text.startsWith(RECIPE_NAME2) then
+          search(i.searchByRecipeName,
+            text.replaceAll(RECIPE_NAME + "|" + RECIPE_NAME2, ""),
+            chatId,
+            NOT_FOUND_NAME)
         else if text.matches("\\d") then
           chooseRecipe(text, chatId)
         else if text.equalsIgnoreCase(MORE) || text.equalsIgnoreCase(MORE2) then
@@ -92,12 +100,18 @@ class CookingBot(token: String, i: Index) {
         |Я найду рецепты, все игредиенты которых
         |входят в приведенный список.
         |Пример: `/всеиз говядина, морковь, лук, картофель, рис`
+        |
+        |4. `/name` часть названия рецепта
+        |или
+        |`/название` часть названия рецепта
+        |для поиска рецептов по названию.
+        |Пример: `/название салат с маслинами`
         |""".stripMargin
     val req: SendMessage = new SendMessage(chatId, menuText)
     req.parseMode(ParseMode.Markdown)
     val response = bot.execute(req)
   }
-  def search(searchFunction: List[Set[String]] => List[Recipe],
+  private def search(searchFunction: List[Set[String]] => List[Recipe],
              text: String,
              chatId: Long,
              notFound: String): Unit = {
