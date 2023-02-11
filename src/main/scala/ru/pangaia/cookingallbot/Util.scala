@@ -46,17 +46,17 @@ object Util {
     cp.getProperty("cp")
   }
 
-  def uncompress(zipFile: String): List[Recipe] =
+  def uncompress(zipFile: String): Map[String, Recipe] =
     val datafileIS = new ZipInputStream(getClass
       .getClassLoader
       .getResourceAsStream(zipFile))
     if datafileIS.getNextEntry != null then
       val reader = new BufferedReader(new InputStreamReader(datafileIS,Charset.forName("UTF-8")))
       var line: String = null
-      val result = collection.mutable.ListBuffer[Recipe]()
+      val result = collection.mutable.Map[String, Recipe]()
       while { line = reader.readLine(); line != null} do
-        if line.nonEmpty then result += Recipe(line)
-      result.toList
+        if line.nonEmpty then result += {val r = Recipe(line); (r.mealName, r)}
+      result.toMap
     else throw new IOException("data not found in archive")
 
 }

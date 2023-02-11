@@ -13,7 +13,7 @@ class UI(index: Index, ingredientIndex: List[IngredientName], cp: String) {
 
   def loop(): Unit = {
     print(greeting(index.data.size, ingredientIndex.size))
-    print(index.data(Random.nextInt(index.data.size - 1)))
+    print(index.data.values.toList(Random.nextInt(index.data.size - 1)))
     innerLoop()
   }
 
