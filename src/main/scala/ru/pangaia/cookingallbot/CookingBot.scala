@@ -134,10 +134,16 @@ class CookingBot(token: String, i: Index) {
     val choices = userChoices(chatId)
     val choice = str.toInt
     if choice <= choices.size then
+      val recipe = i.data(userChoices(chatId)(choice))
       val req = new SendMessage(chatId, i.data(userChoices(chatId)(choice)).toMarkdown)
       req.parseMode(ParseMode.Markdown)
       searchResults(chatId) = searchResults(chatId).drop(userChoices(chatId).size)
       bot.execute(req)
+      val sb = new StringBuilder("")
+      for {(step, index) <- recipe.steps.zipWithIndex}
+        sb.append("" + (index+1)).append(". ").append(step).append("\n")
+        val stepReq = new SendMessage(chatId, sb.toString)
+        bot.execute(stepReq)
   }
 
   private def sendMore(chatId: Long): Unit = {
